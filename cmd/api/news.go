@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"newsportal.universityproject.net/internal/data"
@@ -24,7 +25,7 @@ func (app *application) createNewsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	movie := &data.News{
+	news := &data.News{
 		Title:    input.Title,
 		Abstract: input.Abstract,
 		Tags:     input.Tags,
@@ -35,12 +36,24 @@ func (app *application) createNewsHandler(w http.ResponseWriter, r *http.Request
 
 	v := validator.New()
 
-	if data.ValidateMovie(v, movie); !v.Valid() {
+	if data.ValidateNews(v, news); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	fmt.Fprintf(w, "%+v\n", input)
+	err = app.models.News.Insert(news)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/v1/movies/%d", news.ID))
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"movie": news}, headers)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 func (app *application) showNewsHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,20 +62,101 @@ func (app *application) showNewsHandler(w http.ResponseWriter, r *http.Request) 
 		app.notFoundResponse(w, r)
 		return
 	}
-	publishTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", "2023-02-18T22:09:25.000Z")
-	news := data.News{
-		ID:        id,
-		CreatedAt: time.Now(),
-		Title:     "They protested in China - and now they've gone missing",
-		Abstract:  "Police have quietly gone after those who took part in the November protests that shook China",
-		Tags:      []string{"China"},
-		Author:    "Tessa Wong & Grace Tsoi",
-		Source:    "https://www.bbc.com/news/world-asia-china-64592333",
-		Time:      publishTime,
-		Version:   1,
+
+	news, err := app.models.News.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"news": news}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) updateNewsHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	news, err := app.models.News.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Title    string    `json:"title"`
+		Abstract string    `json:"abstract"`
+		Tags     []string  `json:"tags"`
+		Author   string    `json:"author"`
+		Source   string    `json:"source"`
+		Time     time.Time `json:"time"`
+	}
+
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	news.Title = input.Title
+	news.Abstract = input.Abstract
+	news.Tags = input.Tags
+	news.Author = input.Author
+	news.Source = input.Source
+	news.Time = input.Time
+
+	v := validator.New()
+	if data.ValidateNews(v, news); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.News.Update(news)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"news": news}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) deleteNewsHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	err = app.models.News.Delete(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "news successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

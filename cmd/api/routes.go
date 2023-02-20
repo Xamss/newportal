@@ -12,5 +12,7 @@ func (app *application) routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/movies", app.createNewsHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showNewsHandler)
+	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.updateNewsHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteNewsHandler)
 	return router
 }
