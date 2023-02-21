@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -99,7 +100,7 @@ func (m NewsModel) Update(news *News) error {
 	query := `
 	UPDATE news
 	SET title = $1, abstract = $2, tags = $3, author = $4, source = $5, time = $6, version = gen_random_uuid()
-	WHERE id = $7
+	WHERE id = $7 AND version = $8
 	RETURNING version`
 
 	args := []interface{}{
@@ -110,11 +111,22 @@ func (m NewsModel) Update(news *News) error {
 		news.Source,
 		news.Time,
 		news.ID,
+		news.Version,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	return m.pool.QueryRow(ctx, query, args...).Scan(&news.Version)
+
+	err := m.pool.QueryRow(ctx, query, args...).Scan(&news.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
 }
 
 func (m NewsModel) Delete(id int64) error {
@@ -138,4 +150,59 @@ func (m NewsModel) Delete(id int64) error {
 		return ErrRecordNotFound
 	}
 	return nil
+}
+
+func (m NewsModel) GetAll(title string, tags []string, author string, filters Filters) ([]*News, Metadata, error) {
+
+	query := fmt.Sprintf(`
+		SELECT count(*) OVER(), id, created_at, title, abstract, tags, author, source, time, version
+		FROM news
+		WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+		AND (tags @> $2 OR $2 = '{}')
+		AND (to_tsvector('simple', author) @@ plainto_tsquery('simple', $3) OR $3 = '')
+		ORDER BY %s %s, id ASC
+		LIMIT $4 OFFSET $5`, filters.sortColumn(), filters.sortDirection())
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	args := []interface{}{title, tags, author, filters.limit(), filters.offset()}
+
+	rows, err := m.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, Metadata{}, err
+	}
+	defer rows.Close()
+
+	totalRecords := 0
+
+	news := []*News{}
+	for rows.Next() {
+		var post News
+
+		err := rows.Scan(
+			&totalRecords,
+			&post.ID,
+			&post.CreatedAt,
+			&post.Title,
+			&post.Abstract,
+			&post.Tags,
+			&post.Author,
+			&post.Source,
+			&post.Time,
+			&post.Version,
+		)
+		if err != nil {
+			return nil, Metadata{}, err
+		}
+		news = append(news, &post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, Metadata{}, err
+	}
+
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return news, metadata, nil
 }

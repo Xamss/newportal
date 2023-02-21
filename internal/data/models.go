@@ -7,14 +7,16 @@ import (
 
 var (
 	ErrRecordNotFound = errors.New("record not found")
+	ErrEditConflict   = errors.New("edit conflict")
 )
 
 type Models struct {
 	News interface {
-		Insert(movie *News) error
+		Insert(news *News) error
 		Get(id int64) (*News, error)
-		Update(movie *News) error
+		Update(news *News) error
 		Delete(id int64) error
+		GetAll(title string, tags []string, author string, filters Filters) ([]*News, Metadata, error)
 	}
 }
 

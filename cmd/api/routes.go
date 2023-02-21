@@ -5,14 +5,16 @@ import (
 	"net/http"
 )
 
-func (app *application) routes() *httprouter.Router {
+func (app *application) routes() http.Handler {
 	router := httprouter.New()
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/movies", app.createNewsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showNewsHandler)
-	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.updateNewsHandler)
-	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteNewsHandler)
-	return router
+	router.HandlerFunc(http.MethodPost, "/v1/news", app.createNewsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/news/:id", app.showNewsHandler)
+	router.HandlerFunc(http.MethodPatch, "/v1/news/:id", app.updateNewsHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/news/:id", app.deleteNewsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/news", app.listMoviesHandler)
+
+	return app.recoverPanic(app.rateLimit(router))
 }

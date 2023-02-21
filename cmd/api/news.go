@@ -99,12 +99,12 @@ func (app *application) updateNewsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var input struct {
-		Title    string    `json:"title"`
-		Abstract string    `json:"abstract"`
-		Tags     []string  `json:"tags"`
-		Author   string    `json:"author"`
-		Source   string    `json:"source"`
-		Time     time.Time `json:"time"`
+		Title    *string    `json:"title"`
+		Abstract *string    `json:"abstract"`
+		Tags     []string   `json:"tags"`
+		Author   *string    `json:"author"`
+		Source   *string    `json:"source"`
+		Time     *time.Time `json:"time"`
 	}
 
 	err = app.readJSON(w, r, &input)
@@ -113,12 +113,24 @@ func (app *application) updateNewsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	news.Title = input.Title
-	news.Abstract = input.Abstract
-	news.Tags = input.Tags
-	news.Author = input.Author
-	news.Source = input.Source
-	news.Time = input.Time
+	if input.Title != nil {
+		news.Title = *input.Title
+	}
+	if input.Abstract != nil {
+		news.Abstract = *input.Abstract
+	}
+	if input.Tags != nil {
+		news.Tags = input.Tags
+	}
+	if input.Author != nil {
+		news.Author = *input.Author
+	}
+	if input.Source != nil {
+		news.Author = *input.Author
+	}
+	if input.Time != nil {
+		news.Time = *input.Time
+	}
 
 	v := validator.New()
 	if data.ValidateNews(v, news); !v.Valid() {
@@ -128,7 +140,12 @@ func (app *application) updateNewsHandler(w http.ResponseWriter, r *http.Request
 
 	err = app.models.News.Update(news)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
@@ -157,6 +174,42 @@ func (app *application) deleteNewsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"message": "news successfully deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Title  string
+		Tags   []string
+		Author string
+		data.Filters
+	}
+	v := validator.New()
+	qs := r.URL.Query()
+
+	input.Title = app.readString(qs, "title", "")
+	input.Author = app.readString(qs, "author", "")
+	input.Tags = app.readCSV(qs, "tags", []string{})
+
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+
+	input.Filters.Sort = app.readString(qs, "sort", "id")
+	input.Filters.SortSafelist = []string{"id", "title", "time", "-id", "-title", "-time"}
+
+	if data.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	movies, metadata, err := app.models.News.GetAll(input.Title, input.Tags, input.Author, input.Filters)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	err = app.writeJSON(w, http.StatusOK, envelope{"movies": movies, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

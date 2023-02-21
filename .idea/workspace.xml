@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a59c4a80-349f-4fb1-8d1b-bdcbeab10b72" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/cmd/api/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/helpers.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/helpers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/news.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/news.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/routes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/models.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/data/news.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/news.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,6 +48,11 @@
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "settings.editor.selected.configurable": "com.goide.configuration.GoLibrariesConfigurableProvider"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
