@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"time"
 )
 
 var (
@@ -18,10 +19,28 @@ type Models struct {
 		Delete(id int64) error
 		GetAll(title string, tags []string, author string, filters Filters) ([]*News, Metadata, error)
 	}
+	Users interface {
+		Insert(user *User) error
+		GetByEmail(email string) (*User, error)
+		Update(user *User) error
+		GetForToken(tokenScope, tokenPlaintext string) (*User, error)
+	}
+	Tokens interface {
+		Insert(token *Token) error
+		New(userID int64, ttl time.Duration, scope string) (*Token, error)
+		DeleteAllForUser(scope string, userID int64) error
+	}
+	Permissions interface {
+		GetAllForUser(userID int64) (Permissions, error)
+		AddForUser(userID int64, codes ...string) error
+	}
 }
 
 func NewModels(pool *pgxpool.Pool) Models {
 	return Models{
-		News: NewsModel{pool: pool},
+		News:        NewsModel{pool: pool},
+		Users:       UserModel{pool: pool},
+		Tokens:      TokenModel{pool: pool},
+		Permissions: PermissionModel{pool: pool},
 	}
 }

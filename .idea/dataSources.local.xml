@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="GO-223.8617.58">
+    <data-source name="postgres@localhost" uuid="e23cfc8a-e8ff-427f-87c1-534859772b1c">
+      <database-info product="PostgreSQL" version="14.6 (Ubuntu 14.6-0ubuntu0.22.04.1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.5.0" dbms="POSTGRES" exact-version="14.6" exact-driver-version="42.5">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>forget</secret-storage>
+      <user-name>greenlight</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>
