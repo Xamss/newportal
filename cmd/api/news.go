@@ -35,7 +35,6 @@ func (app *application) createNewsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	v := validator.New()
-
 	if data.ValidateNews(v, news); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
@@ -48,9 +47,9 @@ func (app *application) createNewsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	headers := make(http.Header)
-	headers.Set("Location", fmt.Sprintf("/v1/movies/%d", news.ID))
+	headers.Set("Location", fmt.Sprintf("/v1/news/%d", news.ID))
 
-	err = app.writeJSON(w, http.StatusCreated, envelope{"movie": news}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"news": news}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -179,7 +178,7 @@ func (app *application) deleteNewsHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) listNewsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title  string
 		Tags   []string
@@ -204,12 +203,12 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	movies, metadata, err := app.models.News.GetAll(input.Title, input.Tags, input.Author, input.Filters)
+	news, metadata, err := app.models.News.GetAll(input.Title, input.Tags, input.Author, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	err = app.writeJSON(w, http.StatusOK, envelope{"movies": movies, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"news": news, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

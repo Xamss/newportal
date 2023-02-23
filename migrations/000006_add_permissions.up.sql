@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS users_permissions (
 );
 INSERT INTO permissions (code)
 VALUES
-    ('movies:read'),
-    ('movies:write');
+    ('news:read'),
+    ('news:write');

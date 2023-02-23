@@ -6,9 +6,15 @@
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
-      <secret-storage>forget</secret-storage>
+      <secret-storage>master_key</secret-storage>
       <user-name>greenlight</user-name>
-      <schema-mapping />
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="newsportal">
+            <node kind="schema" negative="1" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
     </data-source>
   </component>
 </project>

@@ -34,6 +34,10 @@ type Models struct {
 		GetAllForUser(userID int64) (Permissions, error)
 		AddForUser(userID int64, codes ...string) error
 	}
+	Comments interface {
+		Insert(comment *Comment) error
+		ShowAll(id int64, filters Filters) ([]*Comment, Metadata, error)
+	}
 }
 
 func NewModels(pool *pgxpool.Pool) Models {
@@ -42,5 +46,6 @@ func NewModels(pool *pgxpool.Pool) Models {
 		Users:       UserModel{pool: pool},
 		Tokens:      TokenModel{pool: pool},
 		Permissions: PermissionModel{pool: pool},
+		Comments:    CommentModel{pool: pool},
 	}
 }

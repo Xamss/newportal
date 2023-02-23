@@ -169,10 +169,10 @@ func (m NewsModel) GetAll(title string, tags []string, author string, filters Fi
 	args := []interface{}{title, tags, author, filters.limit(), filters.offset()}
 
 	rows, err := m.pool.Query(ctx, query, args...)
+	defer rows.Close()
 	if err != nil {
 		return nil, Metadata{}, err
 	}
-	defer rows.Close()
 
 	totalRecords := 0
 

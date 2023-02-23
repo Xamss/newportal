@@ -4,7 +4,19 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a59c4a80-349f-4fb1-8d1b-bdcbeab10b72" name="Changes" comment="" />
+    <list default="true" id="a59c4a80-349f-4fb1-8d1b-bdcbeab10b72" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e23cfc8a-e8ff-427f-87c1-534859772b1c/storage_v2/_src_/database/newsportal._2gXSQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/news.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/news.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/news.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/news.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/000006_add_permissions.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/000006_add_permissions.up.sql" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
